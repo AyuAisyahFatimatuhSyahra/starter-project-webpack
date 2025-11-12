@@ -1,0 +1,21 @@
+{
+    "name": "Story SPA",
+    "short_name": "Story",
+    "id": "/",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2563eb",
+    "icons": [
+      { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+      { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    ],
+    "screenshots": [
+      { "src": "/screenshots/home.png", "sizes": "1280x720", "type": "image/png" }
+    ],
+    "shortcuts": [
+      { "name": "Tambah Story", "url": "/#/add-story", "icons": [{ "src": "/icons/shortcut-add.png", "sizes": "96x96" }] },
+      { "name": "Beranda", "url": "/#/home" }
+    ]
+  }
