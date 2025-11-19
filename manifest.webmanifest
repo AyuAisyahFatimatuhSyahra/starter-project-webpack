@@ -8,28 +8,14 @@
   "theme_color": "#2563eb",
   "icons": [
   {
-    "src": "/starter-project-webpack/icons/icon-192.png",
+    "src": "icons/icon-192.png",
     "sizes": "192x192",
     "type": "image/png"
   },
   {
-    "src": "/starter-project-webpack/icons/icon-512.png",
+    "src": "icons/icon-512.png",
     "sizes": "512x512",
     "type": "image/png"
-  }
-],
-"screenshots": [
-  { "src": "/starter-project-webpack/screenshots/home.png", "sizes": "1280x720", "type": "image/png" }
-],
-"shortcuts": [
-  { 
-    "name": "Tambah Story", 
-    "url": "/starter-project-webpack/#/add-story",
-    "icons": [{ "src": "/starter-project-webpack/icons/shortcut-add.png", "sizes": "96x96" }]
-  },
-  { 
-    "name": "Beranda", 
-    "url": "/starter-project-webpack/#/home"
   }
 ]
   }
