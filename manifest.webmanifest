@@ -1,13 +1,12 @@
 {
-    "name": "Story SPA",
-    "short_name": "Story",
-    "id": "/",
-    "start_url": "/",
-    "scope": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#2563eb",
-    "icons": [
+  "name": "Story SPA",
+  "short_name": "Story",
+  "start_url": "/starter-project-webpack/",
+  "scope": "/starter-project-webpack/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
       { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
       { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
     ],
