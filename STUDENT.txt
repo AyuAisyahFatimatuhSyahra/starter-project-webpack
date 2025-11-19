@@ -1,4 +1,2 @@
-
-Deployment URL: https://<your-app>.netlify.app
-VAPID Public Key: BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk
-Map tiles: OSM/Esri (for demo)
+Name: ayu_aisyah_fatimatu
+Deployment URL: https://ayuaisyahfatimatuhsyahra.github.io/starter-project-webpack/
