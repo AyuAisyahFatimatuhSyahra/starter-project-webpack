@@ -9,13 +9,18 @@ module.exports = {
   output: {
     filename: 'main.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/',
     clean: true,
   },
   module: {
     rules: [
-      { test: /\.css$/i, use: ['style-loader', 'css-loader'] },
-      { test: /\.(png|svg|jpg|jpeg|gif|ico)$/i, type: 'asset/resource' },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
@@ -23,10 +28,6 @@ module.exports = {
       template: './src/index.html',
       filename: 'index.html',
       inject: 'body',
-      minify: {
-        collapseWhitespace: true,
-        removeComments: true,
-      },
     }),
     new CopyWebpackPlugin({
       patterns: [

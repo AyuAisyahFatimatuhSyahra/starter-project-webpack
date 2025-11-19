@@ -2,16 +2,15 @@
 <html lang="id">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Story SPA</title>
 
-    <!-- PWA Config -->
+    <!-- PWA -->
     <meta name="theme-color" content="#2563eb" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="./public/favicon.png" />
+    <!-- IMPORTANT: path RELATIF untuk GitHub Pages subpath -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
     <!-- Leaflet CSS -->
     <link
@@ -20,14 +19,11 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-
-    <!-- 
-      styles.css diimport lewat src/index.js, 
-      jadi TIDAK PERLU <link rel="stylesheet"> manual.
-    -->
+    <!-- Catatan: styles.css di-import lewat src/index.js, jadi tidak perlu <link rel="stylesheet"> manual -->
   </head>
+
   <body class="guest">
-    <!-- Aksesibilitas: skip ke konten utama -->
+    <!-- Aksesibilitas -->
     <a class="skip-link" href="#main-content">Lewati ke konten</a>
 
     <header role="banner">
@@ -37,7 +33,7 @@
         </div>
 
         <div class="nav-right">
-          <!-- =================== TAMU =================== -->
+          <!-- Tamu -->
           <div data-nav-guest>
             <a href="#/home">Home</a>
             <a href="#/about">About</a>
@@ -45,39 +41,27 @@
             <a href="#/register" class="btn-secondary">Register</a>
           </div>
 
-          <!-- =================== LOGIN =================== -->
+          <!-- Sudah login -->
           <div data-nav-auth hidden>
             <a href="#/home">Home</a>
             <a href="#/about">About</a>
             <a href="#/add-story" class="btn-primary">+ Add Story</a>
-            <button id="btn-push" class="btn-secondary" type="button">
-              Enable Push
-            </button>
-            <button id="btn-install" class="btn-secondary" type="button" hidden>
-              Install App
-            </button>
+            <button id="btn-push" class="btn-secondary" type="button">Enable Push</button>
+            <button id="btn-install" class="btn-secondary" type="button" hidden>Install App</button>
             <a href="#/logout" class="btn-secondary" data-logout>Logout</a>
           </div>
         </div>
       </nav>
     </header>
 
-    <main
-      id="main-content"
-      class="container"
-      tabindex="-1"
-      aria-live="polite"
-      role="main"
-    ></main>
+    <main id="main-content" class="container" tabindex="-1" aria-live="polite" role="main"></main>
 
     <footer role="contentinfo">
       &copy; <span id="year"></span> Story SPA
     </footer>
 
     <noscript>
-      <p class="container">
-        JavaScript nonaktif. Aktifkan JavaScript untuk menggunakan aplikasi ini.
-      </p>
+      <p class="container">JavaScript nonaktif. Aktifkan JavaScript untuk menggunakan aplikasi ini.</p>
     </noscript>
 
     <!-- Leaflet JS -->
@@ -87,16 +71,12 @@
       crossorigin=""
     ></script>
 
-    <!-- 
-      JS bundle akan di-inject otomatis oleh HtmlWebpackPlugin.
-      Tidak perlu <script src="bundle.js"> manual.
-    -->
-
+    <!-- Fallback register SW (RELATIF supaya cocok di GitHub Pages subpath) -->
     <script>
-      // Fallback register SW (kalau app.js belum sempat jalan)
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('sw.js').catch(() => {});
       }
     </script>
+    <!-- Bundle JS akan di-inject otomatis oleh HtmlWebpackPlugin -->
   </body>
 </html>

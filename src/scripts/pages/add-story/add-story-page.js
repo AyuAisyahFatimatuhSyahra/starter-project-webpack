@@ -1,15 +1,20 @@
 // src/scripts/pages/add-story/add-story-page.js
 import { StoryAPI } from '../../data/api.js';
 import {
-  idbQueueStory, idbGetOutbox, idbDeleteOutbox
+  idbQueueStory,
+  idbGetOutbox,
+  idbDeleteOutbox,
 } from '../../libs/db.js';
 
-// util: tunggu element sudah benar2 masuk DOM agar Leaflet bisa ukur ukuran
+// util: tunggu element benar-benar masuk DOM supaya Leaflet bisa hitung ukuran
 function waitUntilInDom(el) {
   return new Promise((resolve) => {
     if (document.body.contains(el)) return resolve();
     const obs = new MutationObserver(() => {
-      if (document.body.contains(el)) { obs.disconnect(); resolve(); }
+      if (document.body.contains(el)) {
+        obs.disconnect();
+        resolve();
+      }
     });
     obs.observe(document.body, { childList: true, subtree: true });
   });
@@ -24,18 +29,22 @@ async function flushOutbox(showToast = true) {
     try {
       const res = await StoryAPI.create({
         description: item.description,
-        photoFile  : item.photoFile,     // File/Blob tersimpan di IDB
-        lat        : item.lat,
-        lon        : item.lon,
-        guest      : item.guest,
+        photoFile: item.photoFile, // File/Blob dari IDB
+        lat: item.lat,
+        lon: item.lon,
+        guest: item.guest,
       });
+
       if (!res.error) {
         await idbDeleteOutbox(item.id);
-        // Notifikasi lokal via SW (opsional untuk UX dan memenuhi “Skilled” Push)
-        if (navigator.serviceWorker?.controller) {
+
+        // Notifikasi lokal via SW (bonus UX)
+        if (navigator.serviceWorker) {
           const reg = await navigator.serviceWorker.getRegistration();
           await reg?.showNotification('Story terkirim', {
-            body: item.description?.slice(0, 90) || 'Berhasil mengirim story.',
+            body:
+              item.description?.slice(0, 90) ||
+              'Berhasil mengirim story dari mode offline.',
             icon: '/icons/icon-192.png',
             badge: '/icons/badge.png',
             data: { go: '#/home' },
@@ -43,16 +52,18 @@ async function flushOutbox(showToast = true) {
           });
         }
       }
-    } catch (e) {
-      // Jika masih gagal (tetap offline / server down), biarkan di queue
+    } catch {
+      // tetap gagal (masih offline / server down) → biarkan di queue
     }
   }
+
   if (showToast) {
     const toast = document.createElement('p');
     toast.className = 'success';
-    toast.textContent = 'Sinkronisasi offline selesai (jika ada item).';
+    toast.textContent =
+      'Sinkronisasi offline selesai (jika ada story yang tertunda).';
     document.getElementById('main-content')?.prepend(toast);
-    setTimeout(()=>toast.remove(), 2500);
+    setTimeout(() => toast.remove(), 2500);
   }
 }
 
@@ -60,15 +71,17 @@ export function AddStoryPage() {
   const el = document.createElement('section');
   el.innerHTML = `
     <h1>Tambah Story</h1>
-    <p class="hint">Klik peta untuk mengisi koordinat. Bisa unggah foto atau ambil dari kamera.</p>
+    <p class="hint">
+      Klik peta untuk memilih lokasi. Kamu bisa mengunggah foto atau ambil langsung dari kamera.
+    </p>
 
-    <div id="map" class="map" aria-label="Pilih lokasi di peta"></div>
+    <div id="map" class="map map-add" aria-label="Pilih lokasi di peta"></div>
 
     <form class="form" id="form" novalidate>
       <label for="desc">Deskripsi</label>
       <textarea id="desc" required rows="3" placeholder="Tulis deskripsi..."></textarea>
 
-      <label for="photo">Foto (≤1MB)</label>
+      <label for="photo">Foto (≤ 1MB)</label>
       <input id="photo" type="file" accept="image/*" required />
 
       <div class="row-2">
@@ -84,7 +97,8 @@ export function AddStoryPage() {
 
       <details>
         <summary>Ambil foto dari kamera</summary>
-        <video id="cam" autoplay playsinline style="width:100%;max-height:240px;border-radius:8px"></video>
+        <video id="cam" autoplay playsinline
+          style="width:100%;max-height:240px;border-radius:8px"></video>
         <div style="display:flex;gap:8px;margin:8px 0;">
           <button id="startCam" type="button">Mulai Kamera</button>
           <button id="capture" type="button">Ambil Gambar</button>
@@ -94,7 +108,8 @@ export function AddStoryPage() {
       </details>
 
       <label for="guest" style="display:inline-flex;align-items:center;gap:8px;">
-        <input type="checkbox" id="guest" /> Kirim sebagai tamu (tanpa login)
+        <input type="checkbox" id="guest" />
+        Kirim sebagai tamu (tanpa login)
       </label>
 
       <button type="submit" id="submitBtn">Kirim</button>
@@ -103,23 +118,30 @@ export function AddStoryPage() {
     </form>
   `;
 
-  // ====== PETA ======
-  const map = L.map(el.querySelector('#map'), { center: [-2.5, 118], zoom: 4 });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    { attribution: '© OpenStreetMap' }).addTo(map);
+  /* ====== PETA ====== */
+  const map = L.map(el.querySelector('#map'), {
+    center: [-2.5, 118],
+    zoom: 4,
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+  }).addTo(map);
 
   waitUntilInDom(el).then(() => setTimeout(() => map.invalidateSize(), 0));
-  window.addEventListener('resize', () => map.invalidateSize(), { passive: true });
+  window.addEventListener('resize', () => map.invalidateSize(), {
+    passive: true,
+  });
 
   let marker;
   map.on('click', ({ latlng: { lat, lng } }) => {
     el.querySelector('#lat').value = Number(lat).toFixed(6);
     el.querySelector('#lon').value = Number(lng).toFixed(6);
+
     if (marker) marker.setLatLng([lat, lng]);
     else marker = L.marker([lat, lng]).addTo(map);
   });
 
-  // ====== KAMERA ======
+  /* ====== KAMERA ====== */
   let stream;
   const video = el.querySelector('#cam');
   const canvas = el.querySelector('#canvas');
@@ -128,14 +150,20 @@ export function AddStoryPage() {
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.srcObject = stream;
-    } catch { alert('Tidak bisa mengakses kamera.'); }
+    } catch {
+      alert('Tidak bisa mengakses kamera.');
+    }
   });
 
   const stopCam = () => {
-    if (stream) { stream.getTracks().forEach((t) => t.stop()); stream = null; video.srcObject = null; }
+    if (stream) {
+      stream.getTracks().forEach((t) => t.stop());
+      stream = null;
+      video.srcObject = null;
+    }
   };
   el.querySelector('#stopCam').addEventListener('click', stopCam);
-  // hentikan ketika halaman diganti
+  // hentikan kamera ketika pindah halaman
   window.addEventListener('hashchange', stopCam, { once: true });
 
   el.querySelector('#capture').addEventListener('click', () => {
@@ -143,41 +171,60 @@ export function AddStoryPage() {
     canvas.hidden = false;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob((blob) => {
-      const file = new File([blob], 'camera.jpg', { type: blob.type || 'image/jpeg' });
-      const dt = new DataTransfer(); dt.items.add(file);
-      el.querySelector('#photo').files = dt.files;
-    }, 'image/jpeg', 0.9);
+    canvas.toBlob(
+      (blob) => {
+        const file = new File([blob], 'camera.jpg', {
+          type: blob.type || 'image/jpeg',
+        });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        el.querySelector('#photo').files = dt.files;
+      },
+      'image/jpeg',
+      0.9,
+    );
   });
 
-  // ====== SUBMIT ======
+  /* ====== SUBMIT ====== */
   el.querySelector('#form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const desc   = el.querySelector('#desc').value.trim();
-    const photo  = el.querySelector('#photo').files[0];
+
+    const desc = el.querySelector('#desc').value.trim();
+    const photo = el.querySelector('#photo').files[0];
     const latVal = el.querySelector('#lat').value;
     const lonVal = el.querySelector('#lon').value;
-    const lat    = latVal ? parseFloat(latVal) : undefined;
-    const lon    = lonVal ? parseFloat(lonVal) : undefined;
-    const guest  = el.querySelector('#guest').checked;
+    const lat = latVal ? parseFloat(latVal) : undefined;
+    const lon = lonVal ? parseFloat(lonVal) : undefined;
+    const guest = el.querySelector('#guest').checked;
 
-    const err = el.querySelector('#err'); const ok = el.querySelector('#ok');
+    const err = el.querySelector('#err');
+    const ok = el.querySelector('#ok');
     const btn = el.querySelector('#submitBtn');
-    err.textContent = ''; ok.textContent = '';
 
-    if (!desc)  return (err.textContent = 'Deskripsi wajib.');
+    err.textContent = '';
+    ok.textContent = '';
+
+    if (!desc) return (err.textContent = 'Deskripsi wajib.');
     if (!photo) return (err.textContent = 'Foto wajib.');
-    if (photo.size > 1024 * 1024) return (err.textContent = 'Ukuran foto > 1MB.');
+    if (photo.size > 1024 * 1024)
+      return (err.textContent = 'Ukuran foto > 1MB.');
 
     btn.disabled = true;
 
-    // Coba upload langsung
+    // Coba upload langsung (online)
     try {
-      const res = await StoryAPI.create({ description: desc, photoFile: photo, lat, lon, guest });
+      const res = await StoryAPI.create({
+        description: desc,
+        photoFile: photo,
+        lat,
+        lon,
+        guest,
+      });
       if (res.error) throw new Error(res.message || 'Gagal membuat story');
 
       ok.textContent = 'Story berhasil dibuat!';
-      // notif lokal (opsional)
+
+      // Notifikasi lokal
       if (navigator.serviceWorker) {
         const reg = await navigator.serviceWorker.getRegistration();
         await reg?.showNotification('Story berhasil', {
@@ -188,25 +235,29 @@ export function AddStoryPage() {
           actions: [{ action: 'open', title: 'Lihat di Home' }],
         });
       }
-      // ke Home
+
       location.hash = '#/home';
-    } catch (e2) {
-      // Offline / jaringan bermasalah → masukkan ke Queue (IndexedDB)
+    } catch {
+      // Offline → simpan ke queue IndexedDB
       try {
         await idbQueueStory({
           description: desc,
-          photoFile  : photo,
-          lat, lon,
+          photoFile: photo,
+          lat,
+          lon,
           guest,
-          createdAt  : Date.now(),
+          createdAt: Date.now(),
         });
 
-        ok.textContent = 'Tidak ada koneksi. Story disimpan offline dan akan dikirim otomatis saat online.';
-        // Coba jadwalkan background sync (jika tersedia)
+        ok.textContent =
+          'Tidak ada koneksi. Story disimpan offline dan akan dikirim otomatis saat online.';
+
         try {
           const reg = await navigator.serviceWorker?.getRegistration();
           await reg?.sync?.register('sync-outbox');
-        } catch {/* ignore if not supported */}
+        } catch {
+          // browser tidak support Background Sync → nanti flushOutbox dipanggil saat online
+        }
       } catch {
         err.textContent = 'Gagal menyimpan ke penyimpanan offline.';
       }
@@ -215,7 +266,7 @@ export function AddStoryPage() {
     }
   });
 
-  // Flush outbox saat halaman ini dibuka (kalau kebetulan sedang online)
+  // Saat halaman dibuka & sedang online → coba kirim antrean lama
   if (navigator.onLine) flushOutbox(false);
   window.addEventListener('online', () => flushOutbox());
 
